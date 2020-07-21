@@ -42,4 +42,57 @@ implementation 'com.google.android.material:material:1.0.0-rc01'
   public final static String APP_SECRET = "Your SDK Secret";
   ```
 # By now all things are placed correctly, its time to play with your app.
+- In the MainActivity initialize the ZoomSDK, and implement ``` ZoomSDKInitializeListener, View.OnClickListener, ZoomSDKAuthenticationListener ```
+- And initialize it like this
+ ``` 
+        ZoomSDK sdk = ZoomSDK.getInstance();
+          if (sdk.isLoggedIn()) {
+            finish();
+            showApiExampleActivity();
+            return;
+          }
 
+          if (savedInstanceState == null) {
+            sdk.initialize(this, SDK_KEY, SDK_SECRET, WEB_DOMAIN, this);
+          }
+ ```
+ 
+ ```
+   @Override
+    public void onZoomSDKInitializeResult(int errorCode, int internalErrorCode) {
+
+        if (errorCode != ZoomError.ZOOM_ERROR_SUCCESS) {
+            Toast.makeText(this, "Failed to initialize Zoom SDK. Error: " + errorCode + ", internalErrorCode=" + internalErrorCode, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Initialize Zoom SDK successfully.", Toast.LENGTH_LONG).show();
+            ZoomSDK sdk = ZoomSDK.getInstance();
+            if (sdk.tryAutoLoginZoom() == ZoomApiError.ZOOM_API_ERROR_SUCCESS) {
+                sdk.addAuthenticationListener(this);
+                btnLogin.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                btnLogin.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+            }
+        }
+    }
+  ```
+
+- You have to provide your Username and Password to initialte the call. 
+```
+ private void onClickBtnLogin() {
+        String userName = mEdtUserName.getText().toString().trim();
+        String password = mEdtPassord.getText().toString().trim();
+        if (userName.length() == 0 || password.length() == 0) {
+            Toast.makeText(this, "You need to enter user name and password.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        ZoomSDK zoomSDK = ZoomSDK.getInstance();
+        if (zoomSDK.loginWithZoom(userName, password) != ZoomApiError.ZOOM_API_ERROR_SUCCESS) {
+            Toast.makeText(this, "ZoomSDK has not been initialized successfully or sdk is logging in.", Toast.LENGTH_LONG).show();
+        } else {
+            mBtnLogin.setVisibility(View.GONE);
+            mProgressPanel.setVisibility(View.VISIBLE);
+        }
+    }
+```
