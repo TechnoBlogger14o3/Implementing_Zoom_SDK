@@ -34,7 +34,7 @@ implementation 'com.google.android.material:material:1.0.0-rc01'
   - proguard.cfg
   - version.txt
   
-  # In the downloaded file you will see two folders named ***commonlib*** and ***mobilertc***. Import these two as a module. 
+ - In the downloaded file you will see two folders named ***commonlib*** and ***mobilertc***. Import these two as a module. 
   - Change the APP_KEY property and the APP_SECRET property defined in AuthConstants.java to your own SDK key and secret.
   ```
   public final static String WEB_DOMAIN = "zoom.us";
