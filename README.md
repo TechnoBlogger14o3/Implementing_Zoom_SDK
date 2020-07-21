@@ -96,3 +96,53 @@ implementation 'com.google.android.material:material:1.0.0-rc01'
         }
     }
 ```
+- On Success take User to the main Zoom Video Meeting Page
+```
+    @Override
+    public void onZoomSDKLoginResult(long result) {
+        if (result == ZoomAuthenticationError.ZOOM_AUTH_ERROR_SUCCESS) {
+            Toast.makeText(this, "Login successfully", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, WorkEmailUserExampleActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "Login failed result code = " + result, Toast.LENGTH_SHORT).show();
+        }
+        mBtnLogin.setVisibility(View.VISIBLE);
+        mProgressPanel.setVisibility(View.GONE);
+    }
+```
+- In the next screen you have to provide the Meeting ID and Meeting password, and hit on Start Meeting
+
+```
+public void onClickBtnLoginUserStart(View view) {
+		String meetingNo = mEdtMeetingNo.getText().toString().trim();
+		
+		if(meetingNo.length() == 0) {
+			Toast.makeText(this, "You need to enter a scheduled meeting number.", Toast.LENGTH_LONG).show();
+			return;
+		}
+		
+		ZoomSDK zoomSDK = ZoomSDK.getInstance();
+		if(!zoomSDK.isInitialized()) {
+			Toast.makeText(this, "ZoomSDK has not been initialized successfully", Toast.LENGTH_LONG).show();
+			return;
+		}
+		
+		MeetingService meetingService = zoomSDK.getMeetingService();
+		
+		StartMeetingOptions opts = new StartMeetingOptions();
+		int ret = meetingService.startMeeting(this, meetingNo, opts);
+		Log.i(TAG, "onClickBtnLoginUserStart, ret=" + ret);
+	}
+```
+
+- And finally, once everything is done, its time to logout from your zoom.
+```
+	public void onClickBtnLogout(View view) {
+		ZoomSDK zoomSDK = ZoomSDK.getInstance();
+		if(!zoomSDK.logoutZoom()) {
+			Toast.makeText(this, "ZoomSDK has not been initialized successfully", Toast.LENGTH_LONG).show();
+		}
+	}
+```
